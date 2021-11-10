@@ -1,0 +1,185 @@
+-- Reveals the locations of dropped items / shipments
+
+local Settings = {
+
+    ItemData = {
+    
+    [431743608] = { ItemName = "Gun", Color = Color3.fromRGB(163, 162, 165) },
+
+    [1699715593] = { ItemName = "Gun 2", Color = Color3.fromRGB(190, 104, 98) },
+
+    [6597960110] = { ItemName = "Gun 3", Color = Color3.fromRGB(90, 190, 180) },
+
+    [436697873] = { ItemName = "Gun 4", Color = Color3.fromRGB(90, 190, 180) },
+
+    [441464479] = { ItemName = "Shipments", Color = Color3.fromRGB(199, 172, 120) },
+    
+    
+
+    -- SnubNose Shipment rbxassetid://441464479
+
+
+    -- Gun rbxassetid://431743608
+    
+    -- Gun2 190, 104, 98 1699715593
+
+    -- Gun3 rbxassetid://6597960110
+
+    -- Gun4 rbxassetid://436697873
+    },
+    
+    Tracers = false,
+    
+    Circles = true,
+    
+    Distance = true,
+    
+    Notify = true
+    
+    }
+    
+    
+    
+    local function notify(a)
+    
+    local NotificationBindable = Instance.new("BindableFunction")
+    
+    NotificationBindable.OnInvoke = (function(text) end)
+    
+    
+    
+    game.StarterGui:SetCore("SendNotification", {
+    
+    Title = "Item spawned";
+    
+    Text = a;
+    
+    Duration = "2";
+    
+    Callback = NotificationBindable;
+    
+    })
+    
+    end
+    
+    
+    
+    local Wrapper = loadstring(game:HttpGet("https://raw.githubusercontent.com/xSute/Roblox/main/Drawing%20API"))()
+    
+    local Map = workspace.Entities
+    
+    
+    
+    local function GetAsset(Id)
+    
+    if Id:sub(1, 13) == "rbxassetid://" then
+    
+    return tonumber(Id:sub(14, #Id)) -- rbxassetid://0
+    
+    else
+    
+    if Id:sub(1, 32) == "http://www.roblox.com/asset/?id=" then
+    
+    return tonumber(Id:sub(33, #Id))
+    
+    elseif Id:sub(1, 33) == "https://www.roblox.com/asset/?id=" then
+    
+    return tonumber(Id:sub(34, #Id))
+    
+    end
+    
+    return tonumber(Id) -- maybe idk
+    
+    end
+    
+    end
+    
+    
+    
+    local function IsItem(Mesh)
+    
+    local AssetId = GetAsset(Mesh.MeshId)
+    
+    for id, _ in pairs(Settings.ItemData) do
+    
+    if id == AssetId then
+    
+    return true
+    
+    end
+    
+    end
+    
+    return false
+    
+    end
+    
+    
+    
+    local function Esp(Item)
+    
+    local itemData = Settings.ItemData[GetAsset(Item.MeshId)] or { ItemName = "Unknown Item [???]", Color = Color3.fromRGB(255, 255, 255) }
+    
+    if Settings.Notify then
+    
+    notify(itemData.ItemName)
+    
+    end
+    
+    Wrapper:AddObject(
+    
+    Item,
+    
+    itemData.ItemName,
+    
+    itemData.Color,
+    
+    Settings.Distance,
+    
+    Settings.Tracers,
+    
+    Settings.Circles
+    
+    )
+    
+    end
+    
+    
+    
+    -- Grab items that are currently in the game
+    
+    
+    
+    for Index, Object in pairs(Map:GetDescendants()) do
+    
+    if Object:IsA("MeshPart") then
+    
+    if IsItem(Object) then
+    
+    Esp(Object)
+    
+    end
+    
+    end
+    
+    end
+    
+    
+    
+    -- Detect New Items
+    
+    Map.DescendantAdded:Connect(function(Descendant)
+    
+    if Descendant:IsA("MeshPart") then
+    
+    if IsItem(Descendant) then
+    
+    Esp(Descendant)
+    
+    end
+    
+    end
+    
+    end)
+
+    
