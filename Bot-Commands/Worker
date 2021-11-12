@@ -231,6 +231,10 @@ local execution_routines = {
 		local ledger = get_ledger()
 		local ledger_pos = table.find(ledger,info.bot_id)
 		local_player.Character.Humanoid.WalkToPoint = pos_list[ledger_pos] or Vector3.new()
+		local pos_list = {cpos.Position + (cpos.LookVector*-3) + (cpos.RightVector*-3),cpos.Position + (cpos.LookVector*-3) - (cpos.RightVector*-3)}
+		local ledger = get_ledger()
+		local ledger_pos = table.find(ledger,info.bot_id)
+		local_player.Character.Humanoid.WalkToPoint = pos_list[ledger_pos] or Vector3.new()
 	end;
 	['follow'] = function(follow_player)
 		if check_player(follow_player) and check_player() then
