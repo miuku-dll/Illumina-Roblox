@@ -231,10 +231,6 @@ local execution_routines = {
 		local ledger = get_ledger()
 		local ledger_pos = table.find(ledger,info.bot_id)
 		local_player.Character.Humanoid.WalkToPoint = pos_list[ledger_pos] or Vector3.new()
-		local pos_list = {cpos.Position + (cpos.LookVector*-3) + (cpos.RightVector*-3),cpos.Position + (cpos.LookVector*-3) - (cpos.RightVector*-3)}
-		local ledger = get_ledger()
-		local ledger_pos = table.find(ledger,info.bot_id)
-		local_player.Character.Humanoid.WalkToPoint = pos_list[ledger_pos] or Vector3.new()
 	end;
 	['follow'] = function(follow_player)
 		if check_player(follow_player) and check_player() then
@@ -277,8 +273,8 @@ local execution_routines = {
     end;
     ['orbit'] = function(player)
         if not check_player(player) or not check_player() then return end
-        local orbit_radius = 3;
-        local speed = 2/5
+        local orbit_radius = 5;
+        local speed = 1/5
         local local_bot_index = table.find(get_ledger(),info.bot_id)
         local circle_x = math.sin((command_storage.orbit_step+(local_bot_index*3.14))*speed)*orbit_radius
         local circle_y = math.cos((command_storage.orbit_step+(local_bot_index*3.14))*speed)*orbit_radius
