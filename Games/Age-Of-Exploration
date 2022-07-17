@@ -1,0 +1,88 @@
+local Settings = {
+
+    ItemData = {
+    [431799693] = { ItemName = "Pounds", Color = Color3.fromRGB(163, 162, 165) },
+    [450739879] = { ItemName = "Tree log", Color = Color3.fromRGB(163, 162, 165) },
+    
+    -- Tree log rbxassetid://450739879
+    -- Pounds rbxassetid://431799693
+    },
+    
+    Tracers = false,
+    Circles = true,
+    Distance = true,
+    Notify = true
+    }
+
+    local function notify(a)
+    local NotificationBindable = Instance.new("BindableFunction")
+    NotificationBindable.OnInvoke = (function(text) end)
+    
+    game.StarterGui:SetCore("SendNotification", {
+    Title = "Item spawned";
+    Text = a;
+    Duration = "5";
+    Callback = NotificationBindable;
+    })
+    end
+    
+    local Wrapper = loadstring(game:HttpGet("https://raw.githubusercontent.com/xSute/Roblox/main/Drawing%20API"))()
+    local Map = workspace.World.Items
+      
+    local function GetAsset(Id)
+    if Id:sub(1, 13) == "rbxassetid://" then
+    return tonumber(Id:sub(14, #Id))
+    else
+    if Id:sub(1, 32) == "http://www.roblox.com/asset/?id=" then
+    return tonumber(Id:sub(33, #Id))
+    elseif Id:sub(1, 33) == "https://www.roblox.com/asset/?id=" then
+    return tonumber(Id:sub(34, #Id))
+    end
+    return tonumber(Id)
+    end
+    end
+    
+    local function IsItem(Mesh)
+    local AssetId = GetAsset(Mesh.MeshId)
+    for id, _ in pairs(Settings.ItemData) do
+    if id == AssetId then
+    return true
+    end
+    end
+    return false
+    end
+    
+    local function Esp(Item)
+    
+    local itemData = Settings.ItemData[GetAsset(Item.MeshId)] or { ItemName = "Unknown Item [???]", Color = Color3.fromRGB(255, 255, 255) }
+    if Item.Material == Enum.Material.ForceField then
+    itemData = { ItemName = "Pure Rokakaka", Color = Color3.fromRGB(233, 233, 233) }
+    end
+    if Settings.Notify then
+    notify(itemData.ItemName)
+    end
+    Wrapper:AddObject(
+    Item,
+    itemData.ItemName,
+    itemData.Color,
+    Settings.Distance,
+    Settings.Tracers,
+    Settings.Circles
+    )
+    end
+    
+    for Index, Object in pairs(Map:GetDescendants()) do
+    if Object:IsA("MeshPart") then
+    if IsItem(Object) then
+    Esp(Object)
+    end
+    end
+    end
+    
+    Map.DescendantAdded:Connect(function(Descendant)
+    if Descendant:IsA("MeshPart") then
+    if IsItem(Descendant) then
+    Esp(Descendant)
+    end
+    end
+    end)
